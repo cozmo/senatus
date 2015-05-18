@@ -1,0 +1,31 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Senatus</title>
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,400italic|PT+Serif' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/public/css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="/public/css/main.css">
+</head>
+<body>
+{{end}}
+
+{{define "footer"}}
+<div class="footer">
+  <a class="dark" href="https://keybase.io/cosmo">Cosmo Wolfe</a> © <span class="dark">2015</span>
+</div>
+<script src="https://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="/public/js/autogrow-textarea.js" type="text/javascript"></script>
+<script src="/public/js/main.js" type="text/javascript"></script>
+</body>
+</html>
+{{end}}
+
+{{define "pageHeader"}}
+{{template "header"}}
+<div class="container">
+  <h1 class="header"><a href="/">Senatus</a></h1>
+</div>
+{{end}}
+

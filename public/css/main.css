@@ -1,0 +1,123 @@
+body{
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.container{
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+p{
+  font-size: 18px;
+  line-height: 24px;
+}
+
+h1{
+  font-size: 30px;
+}
+
+.light{
+  color: #aaa;
+  font-weight: 300;
+}
+
+.button{
+  display: inline-block;
+  padding: 15px 30px;
+  background: #D1E751;
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: 500;
+  border: none;
+  outline: none;
+  text-align: center;
+}
+
+.button:hover{
+  background: #9cb604;
+}
+
+textarea, input{
+  width: 100%;
+  border: none;
+  outline: none;
+  border-left: 2px #ccc solid;
+  font-size: 18px;
+  margin-bottom: 15px;
+  padding: 10px 0;
+  padding-left: 15px;
+}
+
+textarea:focus, input:focus{
+  border-color: #999;
+}
+
+/* Header & Footer */
+
+h1.header{
+  font-size: 40px;
+}
+
+h1.header a{
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer{
+  text-align: center;
+  margin-top: 20px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.footer .dark{
+  text-decoration: none;
+  color: #999;
+}
+
+.footer a.dark:hover{
+  color: #666;
+}
+
+/* Homepage */
+
+.container.homepage{
+  text-align: center;
+}
+
+.container.homepage h1{
+  font-family: 'PT Serif', serif;
+  font-size: 60px;
+  color: #111;
+}
+
+.container.homepage h2{
+  color: #999;
+  font-weight: 300;
+  font-size: 18px;
+  margin-top: -24px;
+}
+
+/* Topic */
+
+.topic .metadata{
+  font-size: 14px;
+  margin-top: -18px;
+}
+
+.topic .button{
+  display: block;
+  width: 100%;
+}
+
+.topic .question{
+  margin-top: 20px;
+  font-size: 22px;
+}
+
+.topic .question .metadata{
+  margin: 0;
+}
