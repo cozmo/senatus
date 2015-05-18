@@ -1,0 +1,10 @@
+{{template "pageHeader"}}
+<div class="container">
+  <h1>Create New Topic</h1>
+  <form method="POST" action="/topics/new">
+    <input name="name" placeholder="Topic Title" type="text" />
+    <textarea name="description" placeholder="Topic Description"></textarea>
+    <button class="button" type="submit">Create Topic</button>
+  </form>
+</div>
+{{template "footer"}}

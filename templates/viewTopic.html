@@ -1,0 +1,25 @@
+{{template "pageHeader"}}
+<div class="container topic">
+  <h1><span class="light">§</span> {{.Name}}</h1>
+  <div class="metadata">
+    <span class="light">Posted on</span> {{.PostDate}} <span class="light">by</span> {{.AuthorName}}
+  </div>
+  <p>{{.Description}}</p>
+  {{ if .LoggedIn }}
+    <form method="POST" action="/topics/{{.Id}}/question">
+      <textarea name="question" placeholder="Submit a question"></textarea>
+      <button class="button" type="submit">Submit Question</button>
+    </form>
+  {{else}}
+    <a href="/login/{{.Id}}" class="button">Log in to post a question</a>
+  {{end}}
+  {{ range $key, $value := .Questions }}
+    <div class="question">
+      {{$value.Text}}
+        <div class="metadata">
+          <span class="light">Posted on</span> {{$value.PostDate}} <span class="light">by</span> {{$value.AuthorName}}
+        </div>
+    </div>
+  {{ end }}
+</div>
+{{template "footer"}}
