@@ -15,7 +15,8 @@ func sessionMiddleware(h *handler.Handler, store sessions.Store, routeHandler fu
 	return func(res http.ResponseWriter, req *http.Request) {
 		session, err := store.Get(req, "session")
 		if err != nil {
-			h.UnknownErrorHandler(res, req)
+			http.SetCookie(res, &http.Cookie{Name: "session", MaxAge: -1, Path: "/"})
+			routeHandler(res, req, nil)
 			return
 		}
 		id, ok := session.Values["id"].(string)
@@ -49,12 +50,15 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", sessionMiddleware(h, sessionStore, h.IndexHandler)).Methods("GET")
+	r.HandleFunc("/topics", sessionMiddleware(h, sessionStore, h.ViewTopicsHandler)).Methods("GET")
 	r.HandleFunc("/topics/new", sessionMiddleware(h, sessionStore, h.NewTopicGetHandler)).Methods("GET")
 	r.HandleFunc("/topics/new", sessionMiddleware(h, sessionStore, h.NewTopicPostHandler)).Methods("POST")
 	r.HandleFunc("/topics/{id}", sessionMiddleware(h, sessionStore, h.ViewTopicHandler)).Methods("GET")
 	r.HandleFunc("/login/{id}", h.LoginHandler).Methods("GET")
+	r.HandleFunc("/login", h.LoginHandler).Methods("GET")
 	r.HandleFunc("/topics/{id}/question", sessionMiddleware(h, sessionStore, h.NewQuestionHandler)).Methods("POST")
 	r.HandleFunc("/oauth", h.OAuthCallback).Methods("GET")
+	r.HandleFunc("/logout", h.LogoutHandler).Methods("GET")
 	r.HandleFunc("/favicon.ico", func(res http.ResponseWriter, req *http.Request) {
 		res.Header().Set("Content-Type", "image/x-icon")
 		http.ServeFile(res, req, "./public/favicon.ico")

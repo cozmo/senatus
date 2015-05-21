@@ -28,6 +28,7 @@ type Question struct {
 type DB interface {
 	NewTopic(name, description string, user *User) (*Topic, error)
 	TopicById(Id string) (*Topic, error)
+	TopicsByUser(user *User) ([]*Topic, error)
 	QuestionsForTopic(topicId string) ([]*Question, error)
-	NewQuestion(topicId, question string) (*Question, error)
+	NewQuestion(topicId, question string, user *User) (*Question, error)
 }

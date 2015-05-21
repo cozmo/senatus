@@ -9,13 +9,25 @@
   <link rel="stylesheet" type="text/css" href="/public/css/main.css">
 </head>
 <body>
+{{if .User}}
+  <div class="user-info container">
+    <span class="light">Hello</span> <span class="username">{{.User.Username}}</span>
+    <div>
+      <a href="/topics">Your Topics</a> <span class="light">•</span> <a href="/logout">Log Out</a>
+    </div>
+  </div>
+{{else}}
+  <div class="user-info container">
+    <a href="/login">Log In</a>
+  </div>
+{{end}}
 {{end}}
 
 {{define "footer"}}
 <div class="footer">
   <a class="dark" href="https://keybase.io/cosmo">Cosmo Wolfe</a> © <span class="dark">2015</span>
 </div>
-<script src="https://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="/public/js/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="/public/js/autogrow-textarea.js" type="text/javascript"></script>
 <script src="/public/js/main.js" type="text/javascript"></script>
 </body>
@@ -23,7 +35,7 @@
 {{end}}
 
 {{define "pageHeader"}}
-{{template "header"}}
+{{template "header" .}}
 <div class="container">
   <h1 class="header"><a href="/">Senatus</a></h1>
 </div>

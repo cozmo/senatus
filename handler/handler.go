@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/templaedhel/senatus/db"
@@ -43,7 +45,7 @@ func (h *Handler) initiateLogin(destination string, res http.ResponseWriter, req
 func (h *Handler) OAuthCallback(res http.ResponseWriter, req *http.Request) {
 	codes := req.URL.Query()["code"]
 	if len(codes) != 1 {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, errors.New("No code returned from Google"))
 		return
 	}
 	code := codes[0]
@@ -55,13 +57,13 @@ func (h *Handler) OAuthCallback(res http.ResponseWriter, req *http.Request) {
 	values.Set("client_secret", os.Getenv("CLIENT_SECRET"))
 	postResp, err := http.PostForm("https://www.googleapis.com/oauth2/v3/token", values)
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	defer postResp.Body.Close()
 	tokenBody, err := ioutil.ReadAll(postResp.Body)
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	var tokenResponse struct {
@@ -70,7 +72,7 @@ func (h *Handler) OAuthCallback(res http.ResponseWriter, req *http.Request) {
 	json.Unmarshal(tokenBody, &tokenResponse)
 	accessToken := tokenResponse.AccessToken
 	if accessToken == "" {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	userReq, _ := http.NewRequest("GET", "https://www.googleapis.com/plus/v1/people/me", nil)
@@ -84,20 +86,20 @@ func (h *Handler) OAuthCallback(res http.ResponseWriter, req *http.Request) {
 	}
 	userBody, err := ioutil.ReadAll(userResp.Body)
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	json.Unmarshal(userBody, &userResponse)
 	session, err := h.sessionStore.Get(req, "session")
 	if userResponse.Id == "" || userResponse.Name == "" || err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	session.Values["id"] = userResponse.Id
 	session.Values["name"] = userResponse.Name
 	err = session.Save(req, res)
 	if userResponse.Id == "" || userResponse.Name == "" || err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	str, ok := session.Values["destination"].(string)
@@ -113,13 +115,14 @@ func (h *Handler) NotFoundHandler(res http.ResponseWriter, req *http.Request) {
 	templates.ExecuteTemplate(res, "error.html", map[string]string{"Error": "Invalid URL"})
 }
 
-func (h *Handler) UnknownErrorHandler(res http.ResponseWriter, req *http.Request) {
+func (h *Handler) UnknownErrorHandler(res http.ResponseWriter, req *http.Request, err error) {
+	fmt.Println(err)
 	res.WriteHeader(http.StatusInternalServerError)
 	templates.ExecuteTemplate(res, "error.html", map[string]string{"Error": "Unknown Error Occurred"})
 }
 
 func (h *Handler) IndexHandler(res http.ResponseWriter, req *http.Request, user *db.User) {
-	templates.ExecuteTemplate(res, "index.html", nil)
+	templates.ExecuteTemplate(res, "index.html", map[string]interface{}{"User": user})
 }
 
 func (h *Handler) NewTopicGetHandler(res http.ResponseWriter, req *http.Request, user *db.User) {
@@ -127,7 +130,7 @@ func (h *Handler) NewTopicGetHandler(res http.ResponseWriter, req *http.Request,
 		h.initiateLogin(req.URL.String(), res, req)
 		return
 	}
-	templates.ExecuteTemplate(res, "newTopic.html", nil)
+	templates.ExecuteTemplate(res, "newTopic.html", map[string]interface{}{"User": user})
 }
 
 func (h *Handler) NewTopicPostHandler(res http.ResponseWriter, req *http.Request, user *db.User) {
@@ -137,7 +140,7 @@ func (h *Handler) NewTopicPostHandler(res http.ResponseWriter, req *http.Request
 	}
 	topic, err := h.database.NewTopic(req.PostFormValue("name"), req.PostFormValue("description"), user)
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	http.Redirect(res, req, "/topics/"+topic.Id, http.StatusFound)
@@ -150,7 +153,7 @@ func (h *Handler) NewQuestionHandler(res http.ResponseWriter, req *http.Request,
 	}
 	topic, err := h.database.TopicById(mux.Vars(req)["id"])
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	if topic == nil {
@@ -158,9 +161,9 @@ func (h *Handler) NewQuestionHandler(res http.ResponseWriter, req *http.Request,
 		return
 	}
 
-	_, err = h.database.NewQuestion(mux.Vars(req)["id"], req.PostFormValue("question"))
+	_, err = h.database.NewQuestion(mux.Vars(req)["id"], req.PostFormValue("question"), user)
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	http.Redirect(res, req, "/topics/"+topic.Id, http.StatusFound)
@@ -169,7 +172,7 @@ func (h *Handler) NewQuestionHandler(res http.ResponseWriter, req *http.Request,
 func (h *Handler) ViewTopicHandler(res http.ResponseWriter, req *http.Request, user *db.User) {
 	topic, err := h.database.TopicById(mux.Vars(req)["id"])
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 	if topic == nil {
@@ -179,7 +182,7 @@ func (h *Handler) ViewTopicHandler(res http.ResponseWriter, req *http.Request, u
 
 	questions, err := h.database.QuestionsForTopic(mux.Vars(req)["id"])
 	if err != nil {
-		h.UnknownErrorHandler(res, req)
+		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 
@@ -201,6 +204,7 @@ func (h *Handler) ViewTopicHandler(res http.ResponseWriter, req *http.Request, u
 	}
 
 	data := struct {
+		User        *db.User
 		LoggedIn    bool
 		Id          string
 		Name        string
@@ -209,12 +213,50 @@ func (h *Handler) ViewTopicHandler(res http.ResponseWriter, req *http.Request, u
 		Description string
 		Questions   []questionData
 	}{
-		isLoggedIn, topic.Id, topic.Name, topic.Created.Format("Jan 2 2006"), topic.User.Username, topic.Description, processedQuestions,
+		user, isLoggedIn, topic.Id, topic.Name, topic.Created.Format("Jan 2 2006"), topic.User.Username, topic.Description, processedQuestions,
 	}
 
 	templates.ExecuteTemplate(res, "viewTopic.html", data)
 }
 
+func (h *Handler) ViewTopicsHandler(res http.ResponseWriter, req *http.Request, user *db.User) {
+	if user == nil {
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+
+	topics, err := h.database.TopicsByUser(user)
+	if err != nil {
+		h.UnknownErrorHandler(res, req, err)
+		return
+	}
+
+	type topicData struct {
+		Id          string
+		Name        string
+		PostDate    string
+		AuthorName  string
+		Description string
+	}
+
+	processedTopics := []topicData{}
+
+	for _, topic := range topics {
+		processedTopics = append(processedTopics, topicData{topic.Id, topic.Name, topic.Created.Format("Jan 2 2006"), topic.User.Username, topic.Description})
+	}
+
+	templates.ExecuteTemplate(res, "viewTopics.html", map[string]interface{}{"Topics": processedTopics, "User": user})
+}
+
 func (h *Handler) LoginHandler(res http.ResponseWriter, req *http.Request) {
-	h.initiateLogin("/topics/"+mux.Vars(req)["id"], res, req)
+	if mux.Vars(req)["id"] != "" {
+		h.initiateLogin("/topics/"+mux.Vars(req)["id"], res, req)
+	} else {
+		h.initiateLogin("/topics", res, req)
+	}
+}
+
+func (h *Handler) LogoutHandler(res http.ResponseWriter, req *http.Request) {
+	http.SetCookie(res, &http.Cookie{Name: "session", MaxAge: -1, Path: "/"})
+	http.Redirect(res, req, "/", 302)
 }

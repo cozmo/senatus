@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 	"time"
 )
 
@@ -67,6 +68,10 @@ func NewMongoDB(mongoURL string) (DB, error) {
 }
 
 func (mongodb *MongoDB) NewTopic(name, description string, user *User) (*Topic, error) {
+	if strings.Trim(name, " ") == "" {
+		return nil, errors.New("Name must be provided")
+	}
+
 	session := mongodb.session.Copy()
 	defer session.Close()
 
@@ -99,7 +104,11 @@ func (mongodb *MongoDB) TopicById(Id string) (*Topic, error) {
 	return result.ToTopic(), nil
 }
 
-func (mongodb *MongoDB) NewQuestion(topicId, question string) (*Question, error) {
+func (mongodb *MongoDB) NewQuestion(topicId, question string, user *User) (*Question, error) {
+	if strings.Trim(question, " ") == "" {
+		return nil, errors.New("Question must be provided")
+	}
+
 	if !bson.IsObjectIdHex(topicId) {
 		return nil, errors.New("Invalid ObjectId")
 	}
@@ -112,8 +121,8 @@ func (mongodb *MongoDB) NewQuestion(topicId, question string) (*Question, error)
 		TopicId:  bson.ObjectIdHex(topicId),
 		Question: question,
 		User: mongoUser{
-			GoogleId: "abc",
-			UserName: "Cosmo Wolfe",
+			GoogleId: user.GoogleId,
+			UserName: user.Username,
 		},
 		Created: time.Now(),
 	}
@@ -140,4 +149,20 @@ func (mongodb *MongoDB) QuestionsForTopic(topicId string) ([]*Question, error) {
 		return questions, err
 	}
 	return questions, nil
+}
+
+func (mongodb *MongoDB) TopicsByUser(user *User) ([]*Topic, error) {
+	session := mongodb.session.Copy()
+	defer session.Close()
+
+	iter := session.DB("").C("topics").Find(bson.M{"user.google_id": user.GoogleId}).Iter()
+	var topic mongoTopic
+	topics := []*Topic{}
+	for iter.Next(&topic) {
+		topics = append(topics, topic.ToTopic())
+	}
+	if err := iter.Close(); err != nil {
+		return topics, err
+	}
+	return topics, nil
 }

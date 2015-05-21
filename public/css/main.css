@@ -17,6 +17,12 @@ h1{
   font-size: 30px;
 }
 
+h3{
+  color: #999;
+  font-weight: 300;
+  margin-top: -12px;
+}
+
 .light{
   color: #aaa;
   font-weight: 300;
@@ -53,6 +59,27 @@ textarea, input{
 
 textarea:focus, input:focus{
   border-color: #999;
+}
+
+.user-info{
+  font-size: 14px;
+  text-align: right;
+  margin-top:10px;
+}
+
+.user-info .username{
+  font-weight: 500;
+}
+
+.user-info a{
+  color:#666;
+  font-size: 13px;
+  font-weight: 300;
+  text-decoration: none;
+}
+
+.user-info a:hover{
+  text-decoration: underline;
 }
 
 /* Header & Footer */
@@ -120,4 +147,16 @@ h1.header a{
 
 .topic .question .metadata{
   margin: 0;
+}
+
+/* Topics List */
+
+.topics .topic h2 a{
+  text-decoration: none;
+  color: #333;
+}
+
+
+.topics .topic h2 a:hover{
+  text-decoration: underline;
 }

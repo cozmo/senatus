@@ -1,13 +1,15 @@
-{{template "pageHeader"}}
+{{template "pageHeader" .}}
 <div class="container topic">
   <h1><span class="light">§</span> {{.Name}}</h1>
   <div class="metadata">
     <span class="light">Posted on</span> {{.PostDate}} <span class="light">by</span> {{.AuthorName}}
   </div>
   <p>{{.Description}}</p>
+  <h2><span class="light">§</span> Questions:</h2>
+  <h3>Submit and vote on questions</h3>
   {{ if .LoggedIn }}
     <form method="POST" action="/topics/{{.Id}}/question">
-      <textarea name="question" placeholder="Submit a question"></textarea>
+      <textarea name="question" placeholder="Submit a question" required></textarea>
       <button class="button" type="submit">Submit Question</button>
     </form>
   {{else}}

@@ -1,0 +1,21 @@
+{{template "pageHeader" .}}
+<div class="container topics">
+  <h1>Your Topics</h1>
+  {{ if .Topics }}
+    <a href="/topics/new" class="button">New Topic</a>
+    {{ range $key, $value := .Topics }}
+      <div class="topic">
+        <h2><span class="light">§</span>
+          <a href="/topics/{{ .Id }}">{{.Name}}</a>
+        </h2>
+        <div class="metadata">
+          <span class="light">Posted on</span> {{.PostDate}} <span class="light">by</span> {{.AuthorName}}
+        </div>
+      </div>
+    {{ end }}
+  {{ else }}
+    <h2 class="light">No Topics Yet</h2>
+    <a href="/topics/new" class="button">New Topic</a>
+  {{ end }}
+</div>
+{{template "footer"}}

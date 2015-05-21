@@ -1,8 +1,9 @@
-{{template "pageHeader"}}
+{{template "pageHeader" .}}
 <div class="container">
   <h1>Create New Topic</h1>
+  <p>A topic is a a prompt you can create that users can submit and vote on questions around</p>
   <form method="POST" action="/topics/new">
-    <input name="name" placeholder="Topic Title" type="text" />
+    <input name="name" placeholder="Topic Title" type="text" required>
     <textarea name="description" placeholder="Topic Description"></textarea>
     <button class="button" type="submit">Create Topic</button>
   </form>
