@@ -6,14 +6,14 @@
   </div>
   <p>{{.Description}}</p>
   <h2><span class="light">§</span> Questions:</h2>
-  <h3>Submit and vote on questions</h3>
+  <h3>Submit and vote on questions.</h3>
   {{ if .LoggedIn }}
     <form method="POST" action="/topics/{{.Id}}/question">
       <textarea name="question" placeholder="Submit a question" required></textarea>
       <button class="button" type="submit">Submit Question</button>
     </form>
   {{else}}
-    <a href="/login/{{.Id}}" class="button">Log in to post a question</a>
+    <a href="/login/{{.Id}}" class="button">Log in to post a question.</a>
   {{end}}
   {{ range $key, $value := .Questions }}
     <div class="question">
