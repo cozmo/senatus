@@ -21,6 +21,15 @@
         <div class="metadata">
           <span class="light">Posted on</span> {{$value.PostDate}} <span class="light">by</span> {{$value.AuthorName}}
         </div>
+        <div class="vote-area">
+          {{$value.Votes}} votes
+          {{ if .UserCanVote}}
+            <a href="/topics/{{$.Id}}/question/{{.Id}}/vote" class="button">Vote</a>
+          {{ else }}
+            <a href="/topics/{{$.Id}}/question/{{.Id}}/unvote" class="button state-voted">Unvote</a>
+          {{ end }}
+
+        </div>
     </div>
   {{ end }}
 </div>
