@@ -166,11 +166,13 @@ func (mongodb *MongoDB) QuestionsForTopic(topicId string, user *User) ([]*Questi
 			continue
 		}
 		question.Votes = count
-		count, err = session.DB("").C("votes").Find(bson.M{"question": bson.ObjectIdHex(question.Id), "user.google_id": user.GoogleId}).Count()
-		if err != nil {
-			continue
+		if user != nil {
+			count, err = session.DB("").C("votes").Find(bson.M{"question": bson.ObjectIdHex(question.Id), "user.google_id": user.GoogleId}).Count()
+			if err != nil {
+				continue
+			}
+			question.UserCanVote = count == 0
 		}
-		question.UserCanVote = count == 0
 		questions = append(questions, question)
 	}
 
