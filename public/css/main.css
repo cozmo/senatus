@@ -150,7 +150,8 @@ h1.header a{
   margin: 0;
 }
 
-.topic .question{
+.topic .question {
+  padding-right: 70px;
   position: relative;
 }
 
