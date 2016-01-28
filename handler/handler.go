@@ -187,18 +187,31 @@ func (h *Handler) ViewTopicHandler(res http.ResponseWriter, req *http.Request, u
 	}
 
 	type questionData struct {
-		Id          string
-		Text        string
-		AuthorName  string
-		PostDate    string
-		Votes       int
-		UserCanVote bool
+		Id            string
+		Text          string
+		AuthorName    string
+		PostDate      string
+		Votes         int
+		UserCanVote   bool
+		BelongsToUser bool // does the current user own this question?
 	}
 
 	processedQuestions := []questionData{}
 
 	for _, question := range questions {
-		q := questionData{question.Id, question.Question, question.User.Username, question.Created.Format("Jan 2 2006"), question.Votes, question.UserCanVote}
+		belongsToUser := false
+		if user != nil && user.GoogleId == question.User.GoogleId {
+			belongsToUser = true
+		}
+		q := questionData{
+			Id:            question.Id,
+			Text:          question.Question,
+			AuthorName:    question.User.Username,
+			PostDate:      question.Created.Format("Jan 2 2006"),
+			Votes:         question.Votes,
+			UserCanVote:   question.UserCanVote,
+			BelongsToUser: belongsToUser,
+		}
 		processedQuestions = append(processedQuestions, q)
 	}
 

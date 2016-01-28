@@ -173,6 +173,7 @@ h1.header a{
   font-size: 14px;
   position: absolute;
   bottom: 0px;
+  display: block;
 }
 
 .topic .question .vote-area .button.state-voted{
@@ -183,6 +184,10 @@ h1.header a{
   background: #D1E751;
 }
 
+.topic .question .vote-area .button.state-locked:hover, .topic .question .vote-area .button.state-locked{
+  background: #ccc;
+  cursor: not-allowed;
+}
 
 /* Topics List */
 

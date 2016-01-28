@@ -165,7 +165,7 @@ func (mongodb *MongoDB) QuestionsForTopic(topicId string, user *User) ([]*Questi
 		if err != nil {
 			continue
 		}
-		question.Votes = count
+		question.Votes = count + 1 // All questions default to 1 vote - the user who created it.
 		if user != nil {
 			count, err = session.DB("").C("votes").Find(bson.M{"question": bson.ObjectIdHex(question.Id), "user.google_id": user.GoogleId}).Count()
 			if err != nil {

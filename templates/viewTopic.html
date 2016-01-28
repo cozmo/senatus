@@ -23,7 +23,7 @@
         </div>
         <div class="vote-area">
           {{$value.Votes}} votes
-          {{ if $.LoggedIn }}
+          {{ if and $.LoggedIn (not .BelongsToUser) }}
             {{ if .UserCanVote}}
               <form method="POST" action="/topics/{{$.Id}}/question/{{.Id}}/vote">
                 <button action="submit" class="button">Vote</button>
@@ -33,7 +33,9 @@
                 <button action="submit" class="button state-voted">Unvote</button>
               </form>
             {{ end }}
-          {{end}}
+          {{ else }}
+            <button class="button state-voted state-locked">Vote</button>
+          {{ end }}
         </div>
     </div>
   {{ end }}
