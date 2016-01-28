@@ -180,22 +180,39 @@ func (h *Handler) ViewTopicHandler(res http.ResponseWriter, req *http.Request, u
 		return
 	}
 
-	questions, err := h.database.QuestionsForTopic(mux.Vars(req)["id"])
+	questions, err := h.database.QuestionsForTopic(mux.Vars(req)["id"], user)
 	if err != nil {
 		h.UnknownErrorHandler(res, req, err)
 		return
 	}
 
 	type questionData struct {
-		Text       string
-		AuthorName string
-		PostDate   string
+		Id            string
+		Text          string
+		AuthorName    string
+		PostDate      string
+		Votes         int
+		UserCanVote   bool
+		BelongsToUser bool // does the current user own this question?
 	}
 
 	processedQuestions := []questionData{}
 
 	for _, question := range questions {
-		processedQuestions = append(processedQuestions, questionData{question.Question, question.User.Username, question.Created.Format("Jan 2 2006")})
+		belongsToUser := false
+		if user != nil && user.GoogleId == question.User.GoogleId {
+			belongsToUser = true
+		}
+		q := questionData{
+			Id:            question.Id,
+			Text:          question.Question,
+			AuthorName:    question.User.Username,
+			PostDate:      question.Created.Format("Jan 2 2006"),
+			Votes:         question.Votes,
+			UserCanVote:   question.UserCanVote,
+			BelongsToUser: belongsToUser,
+		}
+		processedQuestions = append(processedQuestions, q)
 	}
 
 	isLoggedIn := false
@@ -246,6 +263,32 @@ func (h *Handler) ViewTopicsHandler(res http.ResponseWriter, req *http.Request, 
 	}
 
 	templates.ExecuteTemplate(res, "viewTopics.html", map[string]interface{}{"Topics": processedTopics, "User": user})
+}
+
+func (h *Handler) VoteForQuestionHandler(res http.ResponseWriter, req *http.Request, user *db.User) {
+	if user == nil {
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+
+	if err := h.database.VoteForQuestion(mux.Vars(req)["question_id"], user); err != nil {
+		h.UnknownErrorHandler(res, req, err)
+		return
+	}
+	http.Redirect(res, req, "/topics/"+mux.Vars(req)["id"], 302)
+}
+
+func (h *Handler) UnvoteForQuestionHandler(res http.ResponseWriter, req *http.Request, user *db.User) {
+	if user == nil {
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+
+	if err := h.database.UnvoteForQuestion(mux.Vars(req)["question_id"], user); err != nil {
+		h.UnknownErrorHandler(res, req, err)
+		return
+	}
+	http.Redirect(res, req, "/topics/"+mux.Vars(req)["id"], 302)
 }
 
 func (h *Handler) LoginHandler(res http.ResponseWriter, req *http.Request) {

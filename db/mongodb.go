@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sort"
 	"strings"
 	"time"
 )
@@ -131,7 +132,23 @@ func (mongodb *MongoDB) NewQuestion(topicId, question string, user *User) (*Ques
 	return mongoquestion.ToQuestion(), err
 }
 
-func (mongodb *MongoDB) QuestionsForTopic(topicId string) ([]*Question, error) {
+type sortableQuestions []*Question
+
+func (s sortableQuestions) Len() int {
+	return len(s)
+}
+func (s sortableQuestions) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s sortableQuestions) Less(i, j int) bool {
+	if s[i].Votes == s[j].Votes {
+		return s[i].Created.Unix() > s[j].Created.Unix()
+	} else {
+		return s[i].Votes > s[j].Votes
+	}
+}
+
+func (mongodb *MongoDB) QuestionsForTopic(topicId string, user *User) ([]*Question, error) {
 	if !bson.IsObjectIdHex(topicId) {
 		return nil, errors.New("Invalid ObjectId")
 	}
@@ -140,11 +157,27 @@ func (mongodb *MongoDB) QuestionsForTopic(topicId string) ([]*Question, error) {
 	defer session.Close()
 
 	iter := session.DB("").C("questions").Find(bson.M{"topic": bson.ObjectIdHex(topicId)}).Iter()
-	var question mongoQuestion
-	questions := []*Question{}
-	for iter.Next(&question) {
-		questions = append(questions, question.ToQuestion())
+	questions := sortableQuestions{}
+	var q mongoQuestion
+	for iter.Next(&q) {
+		question := q.ToQuestion()
+		count, err := session.DB("").C("votes").Find(bson.M{"question": bson.ObjectIdHex(question.Id)}).Count()
+		if err != nil {
+			continue
+		}
+		question.Votes = count + 1 // All questions default to 1 vote - the user who created it.
+		if user != nil {
+			count, err = session.DB("").C("votes").Find(bson.M{"question": bson.ObjectIdHex(question.Id), "user.google_id": user.GoogleId}).Count()
+			if err != nil {
+				continue
+			}
+			question.UserCanVote = count == 0
+		}
+		questions = append(questions, question)
 	}
+
+	sort.Sort(questions)
+
 	if err := iter.Close(); err != nil {
 		return questions, err
 	}
@@ -165,4 +198,41 @@ func (mongodb *MongoDB) TopicsByUser(user *User) ([]*Topic, error) {
 		return topics, err
 	}
 	return topics, nil
+}
+
+func (mongodb *MongoDB) VoteForQuestion(questionId string, user *User) error {
+	session := mongodb.session.Copy()
+	defer session.Close()
+	if !bson.IsObjectIdHex(questionId) {
+		return nil // Fail silently
+	}
+	vote := bson.M{
+		"user": mongoUser{
+			GoogleId: user.GoogleId,
+			UserName: user.Username,
+		},
+		"question": bson.ObjectIdHex(questionId),
+	}
+	op := mgo.Change{
+		Update: vote,
+		Upsert: true,
+	}
+	var out mgo.ChangeInfo
+	_, err := session.DB("").C("votes").Find(vote).Apply(op, &out)
+	return err
+}
+
+func (mongodb *MongoDB) UnvoteForQuestion(questionId string, user *User) error {
+	session := mongodb.session.Copy()
+	defer session.Close()
+	if !bson.IsObjectIdHex(questionId) {
+		return nil // Fail silently
+	}
+	query := bson.M{
+		"user.google_id": user.GoogleId,
+		"question":       bson.ObjectIdHex(questionId),
+	}
+	var out mgo.ChangeInfo
+	_, err := session.DB("").C("votes").Find(query).Apply(mgo.Change{Remove: true}, &out)
+	return err
 }

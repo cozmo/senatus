@@ -21,6 +21,22 @@
         <div class="metadata">
           <span class="light">Posted on</span> {{$value.PostDate}} <span class="light">by</span> {{$value.AuthorName}}
         </div>
+        <div class="vote-area">
+          {{$value.Votes}} votes
+          {{ if and $.LoggedIn (not .BelongsToUser) }}
+            {{ if .UserCanVote}}
+              <form method="POST" action="/topics/{{$.Id}}/question/{{.Id}}/vote">
+                <button action="submit" class="button">Vote</button>
+              </form>
+            {{ else }}
+              <form method="POST" action="/topics/{{$.Id}}/question/{{.Id}}/unvote">
+                <button action="submit" class="button state-voted">Unvote</button>
+              </form>
+            {{ end }}
+          {{ else }}
+            <button class="button state-voted state-locked">Vote</button>
+          {{ end }}
+        </div>
     </div>
   {{ end }}
 </div>

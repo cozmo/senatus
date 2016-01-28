@@ -143,10 +143,50 @@ h1.header a{
 .topic .question{
   margin-top: 20px;
   font-size: 22px;
+  min-height: 46px;
 }
 
 .topic .question .metadata{
   margin: 0;
+}
+
+.topic .question {
+  padding-right: 70px;
+  position: relative;
+}
+
+.topic .question .vote-area{
+  width: 60px;
+  height: 46px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  margin-top: -23px;
+  color: #333;
+  font-size: 14px;
+  text-align: center;
+}
+
+.topic .question .vote-area .button{
+  border-radius: 3px;
+  padding: 5px;
+  font-size: 14px;
+  position: absolute;
+  bottom: 0px;
+  display: block;
+}
+
+.topic .question .vote-area .button.state-voted{
+  background: #9cb604;
+}
+
+.topic .question .vote-area .button.state-voted:hover{
+  background: #D1E751;
+}
+
+.topic .question .vote-area .button.state-locked:hover, .topic .question .vote-area .button.state-locked{
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 /* Topics List */
