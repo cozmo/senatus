@@ -25,9 +25,13 @@
           {{$value.Votes}} votes
           {{ if $.LoggedIn }}
             {{ if .UserCanVote}}
-              <a href="/topics/{{$.Id}}/question/{{.Id}}/vote" class="button">Vote</a>
+              <form method="POST" action="/topics/{{$.Id}}/question/{{.Id}}/vote">
+                <button action="submit" class="button">Vote</button>
+              </form>
             {{ else }}
-              <a href="/topics/{{$.Id}}/question/{{.Id}}/unvote" class="button state-voted">Unvote</a>
+              <form method="POST" action="/topics/{{$.Id}}/question/{{.Id}}/unvote">
+                <button action="submit" class="button state-voted">Unvote</button>
+              </form>
             {{ end }}
           {{end}}
         </div>
