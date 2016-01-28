@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/cozmo/senatus/db"
+	"github.com/cozmo/senatus/handler"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	env "github.com/segmentio/go-env"
-	"github.com/templaedhel/senatus/db"
-	"github.com/templaedhel/senatus/handler"
 	"net/http"
 	"os"
 	"runtime"
