@@ -40,6 +40,7 @@ h3{
   border: none;
   outline: none;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .button:hover{
@@ -144,6 +145,12 @@ h1.header a{
   margin-top: 20px;
   font-size: 22px;
   min-height: 46px;
+}
+
+.topic .question .text{
+  line-height: 24px;
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
 .topic .question .metadata{
