@@ -135,6 +135,10 @@ h1.header a{
   margin-top: -24px;
 }
 
+.container.homepage h2 a{
+  color: #999;
+}
+
 /* Topic */
 
 .topic .metadata{
