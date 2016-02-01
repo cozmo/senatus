@@ -101,6 +101,12 @@ h1.header a{
   font-size: 14px;
 }
 
+.footer iframe{
+  display: block;
+  margin: 0 auto;
+  margin-top: 15px;
+}
+
 .footer .dark{
   text-decoration: none;
   color: #999;
