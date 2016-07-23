@@ -1,0 +1,12 @@
+package: senatus
+import:
+- package: github.com/cozmo/senatus
+  subpackages:
+  - db
+  - handler
+- package: github.com/gorilla/mux
+- package: github.com/gorilla/sessions
+- package: github.com/segmentio/go-env
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson

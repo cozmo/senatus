@@ -1,5 +1,0 @@
-senatus:
-  build: .
-  ports:
-    - 80:8001
-    - 443:8000
