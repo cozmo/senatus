@@ -2,15 +2,44 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+	"runtime"
+	"strings"
+
 	"github.com/cozmo/senatus/db"
 	"github.com/cozmo/senatus/handler"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	env "github.com/segmentio/go-env"
-	"net/http"
-	"os"
-	"runtime"
 )
+
+func isHttps(r *http.Request) bool {
+	if r.URL.Scheme == "https" {
+		return true
+	}
+	if strings.HasPrefix(r.Proto, "HTTPS") {
+		return true
+	}
+	if r.Header.Get("X-Forwarded-Proto") == "https" {
+		return true
+	}
+	return false
+}
+
+func ensureHttpsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if !isHttps(req) {
+			hostToSend := req.Host
+			if req.Header.Get("X-Forwarded-Host") != "" {
+				hostToSend = req.Header.Get("X-Forwarded-Host")
+			}
+			http.Redirect(res, req, "https://"+hostToSend+req.URL.String(), 301)
+		} else {
+			next.ServeHTTP(res, req)
+		}
+	})
+}
 
 func sessionMiddleware(h *handler.Handler, store sessions.Store, routeHandler func(http.ResponseWriter, *http.Request, *db.User)) func(http.ResponseWriter, *http.Request) {
 	return func(res http.ResponseWriter, req *http.Request) {
@@ -39,15 +68,6 @@ func main() {
 	}
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// If we get an INSECURE_PORT env var we forward all requests on that port to HTTPs. This allows us to get
-	// around routing systems that don't forward the x-forwarded-proto headers correctly (like https://convox.com/)
-	if os.Getenv("INSECURE_PORT") != "" {
-		fmt.Println("Serving Senatus HTTPs redirector on port " + os.Getenv("INSECURE_PORT"))
-		go http.ListenAndServe(":"+os.Getenv("INSECURE_PORT"), http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			http.Redirect(res, req, "https://"+req.Host+req.URL.String(), 301)
-		}))
-	}
 
 	database, err := db.NewMongoDB(os.Getenv("MONGO_URL"))
 	if err != nil {
@@ -78,7 +98,11 @@ func main() {
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 	r.HandleFunc("/{url:.*}", h.NotFoundHandler)
 
-	http.Handle("/", r)
+	if os.Getenv("ENFORCE_HTTPS") != "" {
+		http.Handle("/", ensureHttpsMiddleware(r))
+	} else {
+		http.Handle("/", r)
+	}
 	fmt.Println("Serving Senatus on port " + os.Getenv("PORT"))
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 }
