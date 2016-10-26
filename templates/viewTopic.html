@@ -8,8 +8,11 @@
   <h2><span class="light">§</span> Questions:</h2>
   <h3>Submit and vote on questions.</h3>
   {{ if .LoggedIn }}
-    <form method="POST" action="/topics/{{.Id}}/question">
+    <form method="POST" action="/topics/{{.Id}}/question" class="new-question-form">
       <textarea name="question" placeholder="Submit a question" required></textarea>
+      <label>
+        <input name="anon" type="checkbox" /> Submit question anonymously
+      </label>
       <button class="button" type="submit">Submit Question</button>
     </form>
   {{else}}
