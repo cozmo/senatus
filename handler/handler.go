@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/cozmo/senatus/db"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/cozmo/senatus/db"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 type Handler struct {
@@ -160,8 +161,12 @@ func (h *Handler) NewQuestionHandler(res http.ResponseWriter, req *http.Request,
 		h.NotFoundHandler(res, req)
 		return
 	}
+	toSubmitUser := user
+	if req.PostFormValue("anon") != "" {
+		toSubmitUser.Username = "Anonymous"
+	}
 
-	_, err = h.database.NewQuestion(mux.Vars(req)["id"], req.PostFormValue("question"), user)
+	_, err = h.database.NewQuestion(mux.Vars(req)["id"], req.PostFormValue("question"), toSubmitUser)
 	if err != nil {
 		h.UnknownErrorHandler(res, req, err)
 		return

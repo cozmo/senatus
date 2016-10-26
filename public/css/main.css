@@ -47,7 +47,7 @@ h3{
   background: #9cb604;
 }
 
-textarea, input{
+textarea, input[type=text]{
   width: 100%;
   border: none;
   outline: none;
@@ -58,7 +58,7 @@ textarea, input{
   padding-left: 15px;
 }
 
-textarea:focus, input:focus{
+textarea:focus, input[type=text]:focus{
   border-color: #999;
 }
 
@@ -140,6 +140,10 @@ h1.header a{
 }
 
 /* Topic */
+
+.new-question-form button{
+  margin-top: 20px;
+}
 
 .topic .metadata{
   font-size: 14px;
