@@ -1,0 +1,19 @@
+hash: c09c7c2737d9e23a19853d41d6258d7f70965aa45635a5283d7dc88bf366fe53
+updated: 2019-05-08T14:42:03.479605-07:00
+imports:
+- name: github.com/gorilla/mux
+  version: c5c6c98bc25355028a63748a498942a6398ccd22
+- name: github.com/gorilla/securecookie
+  version: e65cf8c5df817c89aeb47ecb46064e802e2de943
+- name: github.com/gorilla/sessions
+  version: 12bd4761fc66ac946e16fcc2a32b1e0b066f6177
+- name: github.com/segmentio/go-env
+  version: ea0600a7760cd15ccca9057be4a87d68e95ee876
+- name: gopkg.in/mgo.v2
+  version: 9856a29383ce1c59f308dd1cf0363a79b5bef6b5
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
+testImports: []
