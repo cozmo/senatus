@@ -2,7 +2,7 @@
 #
 # Run a development server locally
 
-make
+make senatus
 
 APP_ENV="development" \
   PORT="3000" \

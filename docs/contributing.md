@@ -2,8 +2,12 @@
 
 ### Development setup
 
-    $ ./script/bootstrap.sh
+Install Glide https://glide.sh/
 
-### Run a server locally
+Use Glide to install dependencies:
+
+    $ glide install
+
+### Run a development server locally
 
     $ ./script/server.sh
