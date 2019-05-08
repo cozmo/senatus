@@ -1,37 +1,37 @@
-body{
-  font-family: 'Ubuntu', sans-serif;
+body {
+  font-family: "Ubuntu", sans-serif;
 }
 
-.container{
+.container {
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
 }
 
-p{
+p {
   font-size: 18px;
   line-height: 24px;
 }
 
-h1{
+h1 {
   font-size: 30px;
 }
 
-h3{
+h3 {
   color: #999;
   font-weight: 300;
   margin-top: -12px;
 }
 
-.light{
+.light {
   color: #aaa;
   font-weight: 300;
 }
 
-.button{
+.button {
   display: inline-block;
   padding: 15px 30px;
-  background: #D1E751;
+  background: #d1e751;
   border-radius: 10px;
   color: #fff;
   text-decoration: none;
@@ -43,11 +43,12 @@ h3{
   box-sizing: border-box;
 }
 
-.button:hover{
+.button:hover {
   background: #9cb604;
 }
 
-textarea, input[type=text]{
+textarea,
+input[type="text"] {
   width: 100%;
   border: none;
   outline: none;
@@ -58,99 +59,100 @@ textarea, input[type=text]{
   padding-left: 15px;
 }
 
-textarea:focus, input[type=text]:focus{
+textarea:focus,
+input[type="text"]:focus {
   border-color: #999;
 }
 
-.user-info{
+.user-info {
   font-size: 14px;
   text-align: right;
-  margin-top:10px;
+  margin-top: 10px;
 }
 
-.user-info .username{
+.user-info .username {
   font-weight: 500;
 }
 
-.user-info a{
-  color:#666;
+.user-info a {
+  color: #666;
   font-size: 13px;
   font-weight: 300;
   text-decoration: none;
 }
 
-.user-info a:hover{
+.user-info a:hover {
   text-decoration: underline;
 }
 
 /* Header & Footer */
 
-h1.header{
+h1.header {
   font-size: 40px;
 }
 
-h1.header a{
+h1.header a {
   color: inherit;
   text-decoration: none;
 }
 
-.footer{
+.footer {
   text-align: center;
   margin-top: 20px;
   color: #ccc;
   font-size: 14px;
 }
 
-.footer iframe{
+.footer iframe {
   display: block;
   margin: 0 auto;
   margin-top: 15px;
 }
 
-.footer .dark{
+.footer .dark {
   text-decoration: none;
   color: #999;
 }
 
-.footer a.dark:hover{
+.footer a.dark:hover {
   color: #666;
 }
 
 /* Homepage */
 
-.container.homepage{
+.container.homepage {
   text-align: center;
 }
 
-.container.homepage h1{
-  font-family: 'PT Serif', serif;
+.container.homepage h1 {
+  font-family: "PT Serif", serif;
   font-size: 60px;
   color: #111;
 }
 
-.container.homepage h2{
+.container.homepage h2 {
   color: #999;
   font-weight: 300;
   font-size: 18px;
   margin-top: -24px;
 }
 
-.container.homepage h2 a{
+.container.homepage h2 a {
   color: #999;
 }
 
 /* Topic */
 
-.new-question-form button{
+.new-question-form button {
   margin-top: 20px;
 }
 
-.topic .metadata{
+.topic .metadata {
   font-size: 14px;
   margin-top: -18px;
 }
 
-.topic .button{
+.topic .button {
   display: block;
   width: 100%;
 }
@@ -159,21 +161,22 @@ h1.header a{
   white-space: pre-line;
 }
 
-.topic .question{
-  margin-top: 20px;
+.topic .question {
+  margin-top: 48px;
   font-size: 22px;
   min-height: 46px;
 }
 
-.topic .question .text{
+.topic .question .text {
   line-height: 24px;
   font-size: 18px;
   margin-bottom: 10px;
   white-space: pre-line;
 }
 
-.topic .question .metadata{
+.topic .question .metadata {
   margin: 0;
+  height: 24px;
 }
 
 .topic .question {
@@ -181,19 +184,18 @@ h1.header a{
   position: relative;
 }
 
-.topic .question .vote-area{
+.topic .question .vote-area {
   width: 60px;
   height: 46px;
   position: absolute;
   right: 0;
-  top: 50%;
-  margin-top: -23px;
+  top: 0;
   color: #333;
   font-size: 14px;
   text-align: center;
 }
 
-.topic .question .vote-area .button{
+.topic .question .vote-area .button {
   border-radius: 3px;
   padding: 5px;
   font-size: 14px;
@@ -202,27 +204,27 @@ h1.header a{
   display: block;
 }
 
-.topic .question .vote-area .button.state-voted{
+.topic .question .vote-area .button.state-voted {
   background: #9cb604;
 }
 
-.topic .question .vote-area .button.state-voted:hover{
-  background: #D1E751;
+.topic .question .vote-area .button.state-voted:hover {
+  background: #d1e751;
 }
 
-.topic .question .vote-area .button.state-locked:hover, .topic .question .vote-area .button.state-locked{
+.topic .question .vote-area .button.state-locked:hover,
+.topic .question .vote-area .button.state-locked {
   background: #ccc;
   cursor: not-allowed;
 }
 
 /* Topics List */
 
-.topics .topic h2 a{
+.topics .topic h2 a {
   text-decoration: none;
   color: #333;
 }
 
-
-.topics .topic h2 a:hover{
+.topics .topic h2 a:hover {
   text-decoration: underline;
 }
