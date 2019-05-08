@@ -308,3 +308,20 @@ func (h *Handler) LogoutHandler(res http.ResponseWriter, req *http.Request) {
 	http.SetCookie(res, &http.Cookie{Name: "session", MaxAge: -1, Path: "/"})
 	http.Redirect(res, req, "/", 302)
 }
+
+// DevLogin will give you a valid session for local development
+func (h *Handler) DevLogin(res http.ResponseWriter, req *http.Request) {
+	session, err := h.sessionStore.Get(req, "session")
+
+	session.Values["id"] = "abc123"
+	session.Values["name"] = "Local Developer"
+
+	err = session.Save(req, res)
+	if err != nil {
+		fmt.Printf("There was an error, err: %s", err)
+		h.UnknownErrorHandler(res, req, err)
+		return
+	}
+
+	http.Redirect(res, req, "/", http.StatusFound)
+}

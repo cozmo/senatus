@@ -96,13 +96,21 @@ func main() {
 		http.ServeFile(res, req, "./public/favicon.ico")
 	}).Methods("GET")
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
-	r.HandleFunc("/{url:.*}", h.NotFoundHandler)
 
 	if os.Getenv("ENFORCE_HTTPS") != "" {
 		http.Handle("/", ensureHttpsMiddleware(r))
 	} else {
 		http.Handle("/", r)
 	}
+
+	fmt.Println("Checking env...")
+	if os.Getenv("APP_ENV") == "development" {
+		fmt.Println("Environment is development")
+		r.HandleFunc("/dev/login", h.DevLogin).Methods("GET")
+	}
+
+	r.HandleFunc("/{url:.*}", h.NotFoundHandler)
+
 	fmt.Println("Serving Senatus on port " + os.Getenv("PORT"))
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 }
